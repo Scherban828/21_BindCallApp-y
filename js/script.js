@@ -1,62 +1,106 @@
+//Optional Chaining
 const auto = {
-    bra: "Tesla",
-    drive() {
-        return `Заведем нашу ${bra}`;
+    brand: 'Tesla',
+    mode: 'X',
+    details: {
+        color: 'Красный',
+        year: 2022,
+        atStock: true,
+    }
+    /*drive:{
+        voice: 'rrrr',
+        klaxons: 'Beep',
+    }*/
+}
+const cars = [auto];
+cars.forEach(car => {
+    console.log(`${car.brand} ${car.details.year}: Цвет - ${car.details.color}`);
+});
+//Но, если в объекте не будет какиех-то свойств, выдаст ощибкеу
+//К примеру, ссли убрать Details
+//"?."
+//В данном случае, есть запрос на Drive, но в оъекте его нет, а с помощью "?." мы осуществляем проверку
+cars.forEach(car => {
+    console.log(`${car.brand} ${car.details.year}: Рычит - ${car.drive?.voice} Цвет - ${car.details.color}`);
+});
+
+
+//Async Await
+//Своя ф-ия с promise
+function sleep(time) {
+    return new Promise((resolve, reject) => {
+        if (time < 1500) {
+            reject(`Слишком мало сна`)
+        }
+        setTimeout(() => resolve(`Поспал ${time / 1000}` + ` сек`), time);
+    })
+}
+sleep(3000).then(res => {
+    console.log(res);
+    return sleep(2000)
+}).then(res => {
+    console.log(res);
+    return sleep(1000);
+}).then(res => {
+    console.log(res);
+}).catch(err => {
+    console.log(`Ошибка,`, err);
+})
+
+
+//AsyncAwait Пример 1
+//Синхронный вариант
+/*const myGit = fetch('https://api.github.com/users/Scherban828');
+console.log(myGit);
+//Выводит Promise
+fetch('https://api.github.com/users/Scherban828').then(res => {
+    return res.json();
+}).then(res => {
+    console.log(res);
+})*/
+//Асинхронный вариант
+async function getGitData() {
+    try {
+        const response = await fetch('api.github.com/users/Scherban828');
+        const data = await response.json();
+        console.log(data);
+    } catch (err) {
+        console.log(`Error >>>`, err);
     }
 }
-//Ф-ия Drive создана в объекту auto, и она привязвна к нему только пока она там
-const autoDrive = auto.drive.bind(auto);
-//Метод Bind привязывает ф-ию к новому объекту
-const bike = {
-    brand: "Suzuki",
-}
-const motorBike = auto.drive.bind(bike);
-console.log(motorBike);
-//Пример создание упрощенной ф-ии
-//Тут Метод Bind привязывает ф-ию к Document 
-const $ = document.querySelector.bind(document);
-const h = $('h1');
-console.log(h);
-//Еще пример
-const bill = {
-    tip: 0.1,
-    calc(total) {
-        console.log(this);
-        return total + total * this.tip;
+getGitData()
+//Тут происходит асинхронное выполнение кода, в данном случае авэйт стоит на ожиданеии прааильного отклика,
+//а в строке адреса ошибка. Соотвественно остальной код выполняется, а этот на ожидании, пока не придет правильный отклик
+
+//AsyncAwait Пример 2
+//Синхронный вариант
+/*const video = document.querySelector('video');
+const myVideo = navigator.mediaDevices.getUserMedia({ video: true }).then(MediaStream => {
+    video.srcObject = MediaStream;
+})
+console.log(myVideo);*/
+//Асинхронный вариант
+const getUserVideo = async () => {
+    try {
+        const response = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = response;
+    } catch (err) {
+        console.log(`Ошибка>>>`, err);
     }
 }
-const pay = bill.calc(1000);
-console.log(pay);
-//Создаем новую переменную и добавляем ей ф-ию calc и меняем условия
-const payall = bill.calc.bind({ tip: 0.2, });
-console.log(payall(2000));
-//Метод call
-//Работает, как метод bind, только аргумент передается сразу в call
-const payCall = bill.calc.call(bill, 5000);
-console.log(payCall);
-//Метод Apply
-//Работает, как метод call, только аргумент передается в массив
-const payApply = bill.calc.apply(bill, [7000]);
-console.log(payApply);
-
-//Прототипы (Prototype)
-function Automobile(brand, price, gas) {
-    this.brand = brand;
-    this.price = price;
-    this.gas = gas;
-}
-//Если создать ф-ию Drive внутри объекта, то
-//У каждой переменной будет ф-ия Drive, но это будут разные ф-ии
-Automobile.prototype.drive(){
-    if (this.gas > 0) {
-        this.gas = this.gas - 20;
-        return this.gas;
-    } else {
-        console.log('Бензин закончился!');
+getUserVideo()
+//AsyncAWait Пример 3
+//Пример на основе ф-ии "Мало сна", она выше 
+const sleepSesion = async () => {
+    try {
+        const sleep1 = await sleep(1500);
+        console.log(sleep1);
+        const sleep2 = await sleep(5000);
+        console.log(sleep2);
+        const sleep3 = await sleep(500);
+        console.log(sleep3);
+    } catch (err) {
+        console.log(`Error>>>`, err);
     }
 }
-const bmw = new Automobile('bmw', '100.00', 100);
-const nissan = new Automobile('nissan', '200.00', 90);
-
-
-
+sleepSesion()
